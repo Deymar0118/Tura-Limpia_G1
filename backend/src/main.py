@@ -1,33 +1,114 @@
 import logging
 from contextlib import asynccontextmanager
+from datetime import datetime, timezone
+
+
 from fastapi import FastAPI, Request, Response, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import text
+from fastapi.responses import JSONResponse
+from slowapi.errors import RateLimitExceeded
+from sqlalchemy.ext.asyncio import AsyncSession, async_session
+from sqlalchemy import text, delete, select
 
+from src.schemas.auth import RolEnum
 from src.core.config import get_settings
-from src.core.database import crear_tablas, get_db
+from src.core.database import AsyncSessionLocal, crear_tablas, get_db
+
+from src.security import (
+    limiter,
+    hashear_password,
+)
+from src.models.usuario import Usuario
+from src.models.token_revocado import TokenRevocado
+from src.models.rol import Rol
+from src.models.perfil import Perfil
+
+from src.routers.auth import router as auth_router
 
 logger = logging.getLogger("turalimpia.main")
 settings = get_settings()
 
 
+async def purgar_tokens_expirados():
+    async with AsyncSessionLocal() as session:
+        resultado = await session.execute(
+            delete(TokenRevocado).where(TokenRevocado.expira_en < datetime.now(timezone.utc))
+        )
+        await session.commit()
+        return resultado.rowcount
+    
+
+async def inicializar_roles() -> None:
+    """Verifica e inserta los roles base del sistema si aún no existen en la BD."""
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            for rol_enum in RolEnum:
+                stmt = select(Rol).where(Rol.nombre == rol_enum.value)
+                result = await session.execute(stmt)
+                rol_existente = result.scalar_one_or_none()
+                
+                if not rol_existente:
+                    nuevo_rol = Rol(nombre=rol_enum.value)
+                    session.add(nuevo_rol)
+                    print(f"-> Rol creado automáticamente: {rol_enum.value}")
+            
+            await session.commit()
+
+async def crear_admin_inicial():
+    if not all([settings.admin_email, settings.admin_password, settings.admin_nombre]):
+        return
+
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            if (await session.execute(
+                select(Usuario.id).where(Usuario.email == settings.admin_email)
+            )).scalar_one_or_none():
+                return
+
+            rol_admin = (await session.execute(
+                select(Rol).where(Rol.nombre == RolEnum.ADMIN.value)
+            )).scalar_one_or_none()
+
+            if not rol_admin:
+                rol_admin = Rol(nombre=RolEnum.ADMIN.value)
+                session.add(rol_admin)
+                await session.flush()
+
+            admin = Usuario(
+                nombre=settings.admin_nombre,
+                email=settings.admin_email,
+                password_hash=hashear_password(settings.admin_password)
+            )
+            session.add(admin)
+            await session.flush() 
+
+            session.add(Perfil(
+                usuario_id=admin.id,
+                rol_id=rol_admin.id,
+            ))
+
+            logging.getLogger("turalimpia").info("Admin inicial y perfil creados con éxito: %s", settings.admin_email)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Maneja los eventos de inicio (startup) y cierre (shutdown) del servidor."""
-    logger.info("Iniciando TuraLimpia API...")
+    log = logging.getLogger("turalimpia.startup")
     try:
         if settings.es_produccion:
-            logger.info("Validando credenciales de entorno de producción...")
+            log.info("Validando credenciales de entorno de producción...")
             settings.validar_produccion()
-
-        logger.info("Inicializando esquema de tablas en PostgreSQL...")
+        log.info("Inicializando esquema de tablas en PostgreSQL...")
         await crear_tablas()
-        logger.info("Base de datos inicializada correctamente.")
+        log.info("Base de datos inicializada correctamente.")
+        eliminados = await purgar_tokens_expirados()
+        if eliminados:
+            log.info("Tokens expirados purgados: %d", eliminados)
+        await inicializar_roles()
+        await crear_admin_inicial()
+        log.info("Startup completo")
     except Exception as e:
         logger.error(f"Error crítico en el arranque del servidor: {e}", exc_info=True)
-        raise e
-
+        raise
     yield
     logger.info("Apagando servidor TuraLimpia API...")
 
@@ -43,6 +124,16 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+
+app.state.limiter = limiter
+
+
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Demasiadas solicitudes, intenta mas tarde"},
+    )
 
 # Configuración de políticas de origen cruzado (CORS) para el Frontend en React
 origins = [o.strip() for o in settings.allowed_origins.split(",")]
@@ -71,6 +162,8 @@ async def security_headers(request: Request, call_next):
         )
 
     return response
+
+app.include_router(auth_router)
 
 
 @app.get("/", tags=["Root"])

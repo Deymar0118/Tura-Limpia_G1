@@ -34,6 +34,11 @@ class Settings(BaseSettings):
 # Configuración del Protocolo CORS (Cross-Origin Resource Sharing)
     allowed_origins: str = "http://localhost:5173"
 
+# Datos de admin
+    admin_nombre: str | None = None
+    admin_email: str | None = None
+    admin_password: str | None = None
+
 # Parámetros de Ingesta del Archivo de Entorno
     model_config = SettingsConfigDict(
         env_file=".env", 

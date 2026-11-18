@@ -5,6 +5,7 @@ const SESSION_KEY = 'turalimpia.session'
 export const ROLES = Object.freeze({
   ADMIN: 'admin',
   GERENTE: 'gerente',
+  PLANIFICADOR:"planificador",
   TRABAJADOR: 'trabajador',
   CIUDADANO: 'ciudadano',
 })
@@ -12,11 +13,12 @@ export const ROLES = Object.freeze({
 export const ETIQUETA_ROL = Object.freeze({
   admin: 'Administrador',
   gerente: 'Gerente',
+  planificador: "Planificador",
   trabajador: 'Trabajador',
   ciudadano: 'Ciudadano',
 })
 
-export const getSession = () => {
+export function getSession() {
   const raw = localStorage.getItem(SESSION_KEY)
   if (!raw) return null
   try {
@@ -24,6 +26,16 @@ export const getSession = () => {
   } catch {
     return null
   }
+}
+
+export function setSession(session) {
+  if (session) {
+    saveSession(session)
+  } else {
+    clearSession()
+  }
+
+  return session
 }
 
 export function saveSession(sesion, { actualizarCache = true } = {}) {
@@ -37,15 +49,6 @@ export function saveSession(sesion, { actualizarCache = true } = {}) {
 export function updateSession(cambios) {
   const actual = getSession() || {}
   saveSession({ ...actual, ...cambios }, { actualizarCache: false })
-}
-
-export const setSession = (session) => {
-  if (session) {
-    localStorage.setItem(SESSION_KEY, JSON.stringify(session))
-  } else {
-    localStorage.removeItem(SESSION_KEY)
-  }
-  return session
 }
 
 export function clearSession() {
@@ -66,3 +69,5 @@ export function getUsuario() {
 if (typeof localStorage !== 'undefined') {
   setQueryCacheScope(getSession()?.email || 'anon')
 }
+
+
