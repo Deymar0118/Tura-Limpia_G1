@@ -1,0 +1,341 @@
+.admin-dash-page {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  color: #0f172a;
+}
+
+/* Main Container */
+.admin-dash-container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 32px 32px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Welcome Banner */
+.admin-welcome-banner {
+  background-color: #dcfce7;
+  border: 1px solid #bbf7d0;
+  border-radius: 16px;
+  padding: 32px;
+  color: #064e3b;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-welcome-banner::after {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.admin-welcome-text h1 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0 0 8px;
+  letter-spacing: -0.02em;
+  color: #15803d;
+}
+
+.admin-welcome-text p {
+  font-size: 0.95rem;
+  color: #166534;
+  max-width: 650px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.admin-welcome-badge {
+  background: #ffffff;
+  border: 1px solid #86efac;
+  color: #047857;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.admin-welcome-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+
+/* Section Header */
+.admin-section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0b2545;
+  margin: 0;
+}
+
+.admin-section-subtitle {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Stats Section & Grid */
+.admin-stats-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.admin-stat-card {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+
+.admin-stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.admin-stat-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.admin-stat-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-stat-icon-wrap--blue {
+  background: #eff6ff;
+  color: #0077b6;
+}
+
+.admin-stat-icon-wrap--green {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.admin-stat-icon-wrap--red {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.admin-stat-icon-wrap--amber {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.admin-stat-body {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.admin-stat-value {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #0b2545;
+  line-height: 1.1;
+  font-family: var(--font-display, inherit);
+}
+
+.admin-stat-value--green {
+  color: #047857;
+}
+
+.admin-stat-value--red {
+  color: #b91c1c;
+}
+
+.admin-stat-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+.admin-stat-tag--neutral {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.admin-stat-tag--green {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.admin-stat-tag--red {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.admin-stat-tag--amber {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.admin-stat-tag--blue {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+/* Quick Access Section */
+.admin-quick-access-section {
+  margin-top: 4px;
+}
+
+.admin-quick-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+}
+
+.admin-quick-card__info {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.admin-quick-card__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: #ecfdf5;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.admin-quick-card__title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0b2545;
+  margin: 0 0 4px;
+}
+
+.admin-quick-card__desc {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.admin-quick-card__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  background: #10b981;
+  color: #ffffff;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+  white-space: nowrap;
+}
+
+.admin-quick-card__btn:hover {
+  background: #059669;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+}
+
+/* Footer note */
+.admin-dash-footer {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-dash-container {
+    padding: 20px 16px 40px;
+  }
+
+  .admin-welcome-banner {
+    padding: 24px 20px;
+  }
+
+  .admin-welcome-text h1 {
+    font-size: 1.3rem;
+  }
+
+  .admin-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-quick-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-quick-card__btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
