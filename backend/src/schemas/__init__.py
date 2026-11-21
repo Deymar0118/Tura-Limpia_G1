@@ -8,4 +8,5 @@ from .auth import (
     RegistroRequest,
     UsuarioResponse,
     AsignarRolRequest, 
-    CambioPasswordRequest)
+    CambioPasswordRequest,
+    TokenEmail)

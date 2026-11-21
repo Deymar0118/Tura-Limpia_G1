@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     jwt_secret_key: str = "turalimpia_dev_secret_key_cambiar_en_produccion_obligatorio"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
+    email_token_expire_minutes: int = 10
     refresh_token_expire_days: int = 7
 
 # Configuración del Protocolo CORS (Cross-Origin Resource Sharing)
@@ -38,6 +39,11 @@ class Settings(BaseSettings):
     admin_nombre: str | None = None
     admin_email: str | None = None
     admin_password: str | None = None
+
+# Envio de email
+    email_sender: str
+    email_password: str
+    email_port: int = 465
 
 # Parámetros de Ingesta del Archivo de Entorno
     model_config = SettingsConfigDict(

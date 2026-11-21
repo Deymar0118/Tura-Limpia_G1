@@ -1,13 +1,16 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from fastapi import HTTPException, status
 from src.models.token_revocado import TokenRevocado
 from src.models.usuario import Usuario
 from src.models.perfil import Perfil
 from src.models.rol import Rol
+from src.models.codigo_verificacion import CodigoVerificacion
+from src.services.email_service import get_email_service
 from src.security import (
     crear_access_token,
     crear_refresh_token,
+    crear_email_token,
     hashear_password,
     verificar_password,
     verificar_token,
@@ -22,15 +25,16 @@ from src.schemas import (
     RolEnum,
     TokenResponse,
     UsuarioResponse,
+    TokenEmail,
 )
-
 from src.repository import (
     UsuarioRepository,
     RolRepository,
     TokenRevocadoRepository,
     PerfilRepository,
+    CodigoVerificacionRepository,
 )
-
+import secrets
 import logging
 
 logger = logging.getLogger("mediflow.auth_service")
@@ -39,55 +43,66 @@ class AuthService:
     def __init__(self, usuario_repository: UsuarioRepository,
                   perfil_repository: PerfilRepository,
                   rol_repository: RolRepository,
-                  token_revocado_repository: TokenRevocadoRepository,):
+                  token_revocado_repository: TokenRevocadoRepository,
+                  codigo_verificacion_repository: CodigoVerificacionRepository):
         self.usuario_repository = usuario_repository
         self.perfil_repository = perfil_repository
         self.rol_repository = rol_repository
         self.token_revocado_repository = token_revocado_repository
+        self.codigo_verificacion_repository = codigo_verificacion_repository
 
 
-    async def registrar_usuario(self, registro_request: RegistroRequest) -> TokenResponse:
+    async def registrar_usuario(self, registro_request: RegistroRequest) -> TokenEmail:
        
         existe = await self.usuario_repository.find_usuario_by_email(registro_request.email)
+        usuario = None
         if existe:
-            raise HTTPException(
+            if existe.email_verified:
+                raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
-                    detail="Ya existe un usuario con ese email",
-            )
-
-        usuario = Usuario(
-                nombre=registro_request.nombre,
-                email=registro_request.email,
-                password_hash=hashear_password(registro_request.password),
-            )
-
-        try:
-            usuario = await self.usuario_repository.create_usuario(usuario)
-            rol = await self.rol_repository.find_rol_by_nombre(RolEnum.CIUDADANO.value)
-            perfil = Perfil(usuario_id=usuario.id, rol_id=rol.id)
-            await self.perfil_repository.create_perfil(perfil)
-
-        except IntegrityError as e:
-
-            logger.error(f"Error al registrar usuario: {e}")
-    
-            raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT,
-                    detail="Uno de los datos ingresados ya se encuentra registrado y debe ser único.",
+                    detail="Ya existe una cuenta con ese email",
                 )
-        except SQLAlchemyError as e:
-            logger.error(f"Error interno al registrar usuario: {e}")
-            raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="Error interno al registrar el usuario.",
-             )
+            existe.nombre=registro_request.nombre
+            existe.password_hash=hashear_password(registro_request.password)
+            usuario = await self.usuario_repository.update_usuario(existe)
 
-        token_data = {"sub": usuario.id, "roles": [rol.nombre]}
-        return TokenResponse(
-            access_token=crear_access_token(token_data),
-            refresh_token=crear_refresh_token(token_data),
-        )
 
+        if usuario == None: 
+            usuario = Usuario(
+                    nombre=registro_request.nombre,
+                    email=registro_request.email,
+                    password_hash=hashear_password(registro_request.password),
+                )
+
+            try:
+                usuario = await self.usuario_repository.create_usuario(usuario)
+            except IntegrityError as e:
+
+                logger.error(f"Error al registrar usuario: {e}")
+        
+                raise HTTPException(
+                        status_code=status.HTTP_409_CONFLICT,
+                        detail="Uno de los datos ingresados ya se encuentra registrado y debe ser único.",
+                    )
+            except SQLAlchemyError as e:
+                logger.error(f"Error interno al registrar usuario: {e}")
+                raise HTTPException(
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        detail="Error interno al registrar el usuario.",
+                )
+            
+        codigo_verificacion_id = await self._enviar_codigo_verficacion(
+                email=usuario.email,
+                nombre=usuario.nombre,
+                usuario_id=usuario.id
+            )
+
+        token_data = {"sub": codigo_verificacion_id}
+
+        return TokenEmail(
+                email_token=crear_email_token(token_data)
+            )
+    
 
     async def login(self, login_request: LoginRequest) -> TokenResponse:
         usuario = await self.usuario_repository.find_usuario_by_email(login_request.email)
@@ -200,7 +215,7 @@ class AuthService:
 
     
     async def obtener_usuario(self, usuario_id: str) -> UsuarioResponse:
-        usuario = await self.usuario_repository.find_user_by_id(usuario_id)
+        usuario = await self.usuario_repository.find_usuario_by_id(usuario_id)
         if not usuario:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -247,3 +262,25 @@ class AuthService:
             created_at=usuario.created_at,
             last_login=usuario.last_login,
         )
+
+    @staticmethod
+    def _generar_codigo_verificacion() -> str:
+        return f"{secrets.randbelow(1_000_000):06d}"
+
+    async def _enviar_codigo_verficacion(self, email: str, nombre: str, usuario_id:str) -> str:
+        codigo = self._generar_codigo_verificacion()
+        codigo_verifacion = CodigoVerificacion(
+            usuario_id=usuario_id,
+            code_hash=hashear_password(codigo),
+            expires_at=datetime.now(timezone.utc) + timedelta(minutes=10)
+        )
+
+        codigo_verifacion = await self.codigo_verificacion_repository.create_codigo_verificacion(codigo_verifacion)
+
+        await get_email_service().enviar_codigo_verificacion(
+            email_destino=email,
+            nombre=nombre,
+            codigo=codigo
+        )
+
+        return codigo_verifacion.id
