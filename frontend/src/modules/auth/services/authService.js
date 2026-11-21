@@ -32,13 +32,27 @@ export function iniciarSesion({ email, password }) {
 }
 
 export function registrarUsuario({ nombre, email, password }) {
-  return autenticar('/auth/registro', {
-    nombre,
-    email,
-    password,
+  return apiClient('/auth/registro', {
+    metodo: 'POST',
+    body: {
+      nombre,
+      email,
+      password,
+    },
   })
 }
 
+export async function verificarCodigo({ codigo }) {
+  const emailToken = getEmailToken()
+
+  const resultado = await autenticar('/auth/verificar-codigo', { // ajusta la ruta de tu backend
+    body: { codigo },
+    headers: emailToken ? { Authorization: `Bearer ${emailToken}` } : {},
+  })
+
+  clearEmailToken()
+  return resultado
+}
 export async function cerrarSesion() {
   try {
     await apiClient('/auth/logout', { metodo: 'POST' })

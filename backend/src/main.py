@@ -77,7 +77,10 @@ async def crear_admin_inicial():
             admin = Usuario(
                 nombre=settings.admin_nombre,
                 email=settings.admin_email,
-                password_hash=hashear_password(settings.admin_password)
+                password_hash=hashear_password(settings.admin_password),
+                is_active=True,
+                email_verified=True,
+                email_verified_at=datetime.now(timezone.utc) 
             )
             session.add(admin)
             await session.flush() 

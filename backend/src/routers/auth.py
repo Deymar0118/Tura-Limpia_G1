@@ -8,6 +8,7 @@ from src.repository import (
     RolRepository,
     TokenRevocadoRepository,
     PerfilRepository,
+    CodigoVerificacionRepository
 )
 
 from src.core.database import get_db
@@ -28,6 +29,7 @@ from src.schemas import (
     TokenPayload,
     UsuarioResponse,
     RolEnum,
+    TokenEmail,
 )
 
 def get_auth_service(db: AsyncSession = Depends(get_db)) -> AuthService:
@@ -35,12 +37,14 @@ def get_auth_service(db: AsyncSession = Depends(get_db)) -> AuthService:
     rol_repo = RolRepository(db)
     perfil_repo = PerfilRepository(db)
     token_revocado_repo = TokenRevocadoRepository(db)
+    codigo_Verificacion_repo = CodigoVerificacionRepository(db)
 
     return AuthService(
         usuario_repository=usuario_repo,
         rol_repository=rol_repo,
         perfil_repository=perfil_repo,
-        token_revocado_repository=token_revocado_repo
+        token_revocado_repository=token_revocado_repo,
+        codigo_verificacion_repository=codigo_Verificacion_repo
     )
 
 router = APIRouter(prefix="/auth", tags=["Autenticacion"])
@@ -48,7 +52,7 @@ router = APIRouter(prefix="/auth", tags=["Autenticacion"])
 
 @router.post(
     "/registro",
-    response_model=TokenResponse,
+    response_model=TokenEmail,
     status_code=status.HTTP_201_CREATED,
     summary="Registrar nuevo usuario",
     description="Crea una cuenta con rol CIUDADANO por defecto y retorna los tokens de acceso.",
@@ -77,3 +81,20 @@ async def registrar_usuario(request: Request, datos: RegistroRequest, auth_servi
 @limiter.limit("5/minute")
 async def login(request: Request, datos: LoginRequest, auth_service: AuthService = Depends(get_auth_service)):
     return await auth_service.login(datos)
+
+
+@router.get(
+    "/me",
+    response_model=UsuarioResponse,
+    summary="Perfil del usuario autenticado",
+    description="Retorna los datos del usuario asociado al access token actual.",
+    responses={
+        200: {"description": "Datos del usuario"},
+        401: {"description": "Token invalido o expirado"},
+    },
+)
+async def perfil_actual(
+    usuario: TokenPayload = Depends(obtener_usuario_actual),
+    auth_service: AuthService = Depends(get_auth_service),
+):
+    return await auth_service.obtener_usuario(usuario.sub)

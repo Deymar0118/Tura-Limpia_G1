@@ -2,7 +2,8 @@ import { clearSession } from '../../app/session'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
-const TOKENS_KEY = 'mediflow.tokens'
+const TOKENS_KEY = 'turalimpia.tokens'
+const EMAIL_TOKEN_KEY = 'turalimpia.email_token'
 let refreshPromise = null
 
 export class ApiError extends Error {
@@ -40,6 +41,18 @@ export function getRefreshToken() {
   } catch {
     return null
   }
+}
+
+export function setEmailToken(emailToken) {
+  sessionStorage.setItem(EMAIL_TOKEN_KEY, emailToken)
+}
+
+export function getEmailToken() {
+  return sessionStorage.getItem(EMAIL_TOKEN_KEY)
+}
+
+export function clearEmailToken() {
+  sessionStorage.removeItem(EMAIL_TOKEN_KEY)
 }
 
 async function renovarTokens() {
