@@ -13,6 +13,7 @@ import './AdminSidebar.css'
 function AdminSidebar({ colapsado, onToggle }) {
   const navigate = useNavigate()
   const sesion = getSession()
+  const [avisoConstruccion, setAvisoConstruccion] = useState(null)
 
   const nombreUsuario =
     sesion?.nombre || sesion?.nombre_usuario || 'Administrador'
@@ -33,6 +34,7 @@ function AdminSidebar({ colapsado, onToggle }) {
     {
       to: '/dashboard',
       etiqueta: 'Panel Principal',
+      enConstruccion: false,
       icono: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <rect x="3" y="3" width="7" height="9" />
@@ -45,6 +47,7 @@ function AdminSidebar({ colapsado, onToggle }) {
     {
       to: '/admin/usuarios',
       etiqueta: 'Gestión de Usuarios',
+      enConstruccion: true,
       icono: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -57,6 +60,7 @@ function AdminSidebar({ colapsado, onToggle }) {
     {
       to: '/construccion/personal',
       etiqueta: 'Personal y Cuadrillas',
+      enConstruccion: true,
       icono: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <rect x="2" y="7" width="20" height="14" rx="2" />
@@ -67,6 +71,7 @@ function AdminSidebar({ colapsado, onToggle }) {
     {
       to: '/construccion/rutas',
       etiqueta: 'Territorio y Rutas',
+      enConstruccion: true,
       icono: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
@@ -78,6 +83,7 @@ function AdminSidebar({ colapsado, onToggle }) {
     {
       to: '/construccion/flota',
       etiqueta: 'Programación y Flota',
+      enConstruccion: true,
       icono: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <rect x="1" y="3" width="15" height="13" />
@@ -90,6 +96,7 @@ function AdminSidebar({ colapsado, onToggle }) {
     {
       to: '/construccion/monitoreo',
       etiqueta: 'Monitoreo GPS e Incidencias',
+      enConstruccion: true,
       icono: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10" />
@@ -98,6 +105,22 @@ function AdminSidebar({ colapsado, onToggle }) {
       ),
     },
   ]
+
+  const handleItemClick = (e, enlace) => {
+    if (enlace.enConstruccion) {
+      e.preventDefault()
+      setAvisoConstruccion(`La sección "${enlace.etiqueta}" se encuentra actualmente en construcción.`)
+      setTimeout(() => {
+        setAvisoConstruccion(null)
+      }, 3500)
+      return
+    }
+
+    // En pantallas móviles, si se selecciona un enlace funcional, cerrar el menú
+    if (typeof window !== 'undefined' && window.innerWidth <= 768 && !colapsado) {
+      onToggle()
+    }
+  }
 
   return (
     <aside className={`admin-sidebar ${colapsado ? 'admin-sidebar--collapsed' : ''}`}>
@@ -144,13 +167,21 @@ function AdminSidebar({ colapsado, onToggle }) {
             <li key={enlace.to} className="admin-sidebar__item">
               <NavLink
                 to={enlace.to}
+                onClick={(e) => handleItemClick(e, enlace)}
                 className={({ isActive }) =>
-                  `admin-sidebar__link ${isActive ? 'admin-sidebar__link--active' : ''}`
+                  `admin-sidebar__link ${isActive && !enlace.enConstruccion ? 'admin-sidebar__link--active' : ''}`
                 }
                 title={colapsado ? enlace.etiqueta : undefined}
               >
                 <span className="admin-sidebar__icon">{enlace.icono}</span>
-                {!colapsado && <span className="admin-sidebar__label">{enlace.etiqueta}</span>}
+                {!colapsado && (
+                  <span className="admin-sidebar__label-wrap">
+                    <span className="admin-sidebar__label">{enlace.etiqueta}</span>
+                    {enlace.enConstruccion && (
+                      <span className="admin-sidebar__badge-dev">Pronto</span>
+                    )}
+                  </span>
+                )}
               </NavLink>
             </li>
           ))}
@@ -188,6 +219,25 @@ function AdminSidebar({ colapsado, onToggle }) {
           {!colapsado && <span>Cerrar Sesión</span>}
         </button>
       </div>
+
+      {/* Toast Flotante "En Construcción" */}
+      {avisoConstruccion && (
+        <div className="admin-sidebar__toast" role="alert">
+          <span className="admin-sidebar__toast-icon">🚧</span>
+          <div className="admin-sidebar__toast-content">
+            <strong>Módulo en Construcción</strong>
+            <p>{avisoConstruccion}</p>
+          </div>
+          <button
+            type="button"
+            className="admin-sidebar__toast-close"
+            onClick={() => setAvisoConstruccion(null)}
+            aria-label="Cerrar notificación"
+          >
+            ✕
+          </button>
+        </div>
+      )}
     </aside>
   )
 }

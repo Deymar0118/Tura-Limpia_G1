@@ -8,7 +8,8 @@ import './AdminLayout.css'
  * Mantiene la barra lateral izquierda persistente en todas las vistas.
  */
 function AdminLayout() {
-  const [colapsado, setColapsado] = useState(false)
+  // Inicia comprimida por defecto al iniciar sesión o cargar la página
+  const [colapsado, setColapsado] = useState(true)
 
   const handleToggle = () => {
     setColapsado((prev) => !prev)

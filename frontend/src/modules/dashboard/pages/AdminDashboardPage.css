@@ -19,15 +19,15 @@
 
 /* Welcome Banner */
 .admin-welcome-banner {
-  background-color: #dcfce7;
-  border: 1px solid #bbf7d0;
+  background-color: #e0f2fe;
+  border: 1px solid #bae6fd;
   border-radius: 16px;
   padding: 32px;
-  color: #064e3b;
+  color: #0369a1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.08);
+  box-shadow: 0 4px 20px rgba(2, 132, 199, 0.08);
   position: relative;
   overflow: hidden;
 }
@@ -39,7 +39,7 @@
   right: -40px;
   width: 180px;
   height: 180px;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(2, 132, 199, 0.15) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -49,12 +49,12 @@
   font-weight: 800;
   margin: 0 0 8px;
   letter-spacing: -0.02em;
-  color: #15803d;
+  color: #0369a1;
 }
 
 .admin-welcome-text p {
   font-size: 0.95rem;
-  color: #166534;
+  color: #075985;
   max-width: 650px;
   margin: 0;
   line-height: 1.5;
@@ -62,8 +62,8 @@
 
 .admin-welcome-badge {
   background: #ffffff;
-  border: 1px solid #86efac;
-  color: #047857;
+  border: 1px solid #7dd3fc;
+  color: #0369a1;
   padding: 6px 14px;
   border-radius: 999px;
   font-size: 0.78rem;
@@ -78,8 +78,8 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 8px #10b981;
+  background: #0284c7;
+  box-shadow: 0 0 8px #0284c7;
 }
 
 /* Section Header */

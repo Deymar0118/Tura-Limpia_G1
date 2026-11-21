@@ -17,5 +17,13 @@
 @media (max-width: 768px) {
   .admin-layout {
     flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .admin-layout__content {
+    width: 100%;
+    min-height: auto;
+    overflow-x: hidden;
   }
 }
