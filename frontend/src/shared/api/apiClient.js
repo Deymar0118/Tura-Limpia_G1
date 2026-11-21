@@ -117,7 +117,12 @@ export async function apiClient(
 
   const headers = { Accept: 'application/json' }
   const token = getAccessToken()
-  if (token) headers.Authorization = `Bearer ${token}`
+  const tokenEmail = getEmailToken()
+  if (ruta === '/auth/verificar-codigo' && tokenEmail) {
+  headers.Authorization = `Bearer ${tokenEmail}`
+  } else if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
 
   const esFormData = body instanceof FormData
 
@@ -144,7 +149,7 @@ export async function apiClient(
   const data = contentType.includes('application/json') ? await response.json() : null
 
   if (!response.ok) {
-    const rutasSinRefresh = ['/auth/login', '/auth/registro', '/auth/refresh', '/auth/logout']
+    const rutasSinRefresh = ['/auth/login', '/auth/registro','/auth/verificar-codigo', '/auth/refresh', '/auth/logout']
     const puedeRenovar = response.status === 401 && token && reintentar && !rutasSinRefresh.includes(ruta)
     if (puedeRenovar) {
       if (signal?.aborted) throw crearErrorAborto()

@@ -72,6 +72,8 @@ class TokenEmail(BaseModel):
     email_token: str
     token_type: str = "bearer"
 
+class VerificarCodigoRequest(BaseModel):
+    codigo: str = Field(..., min_length=4, max_length=10)
 
 class TokenPayload(BaseModel):
     sub: str

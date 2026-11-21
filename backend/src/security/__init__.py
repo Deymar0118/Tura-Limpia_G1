@@ -1,4 +1,4 @@
 from .auth import crear_access_token, crear_refresh_token, crear_email_token, verificar_token
 from .password import hashear_password, verificar_password
-from .auth_depends import obtener_usuario_actual, requiere_rol
+from .auth_depends import obtener_usuario_actual, requiere_rol, obtener_email_token_actual
 from .rate_limit import limiter

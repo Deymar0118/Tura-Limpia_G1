@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom'
 import LandingPage from './modules/landing/pages/LandingPage'
 import AuthPage from './modules/auth/pages/AuthPage'
 import AdminLayout from './modules/dashboard/layouts/AdminLayout'
+import { VerificarCodigoPage } from './modules/auth/pages/VerificarCodigoPage'
 import DashboardPage from './modules/dashboard/pages/DashboardPage'
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
         {/* Rutas Públicas */}
         <Route path="/login" element={<AuthPage initialTab="login" />} />
         <Route path="/registro" element={<AuthPage initialTab="registro" />} />
+        <Route path="/verificar-codigo" element={<VerificarCodigoPage />} />
         <Route path="/" element={<LandingPage />} />
 
         {/* Rutas Administrativas con Barra Lateral Izquierda Persistente */}

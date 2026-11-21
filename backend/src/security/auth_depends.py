@@ -41,3 +41,25 @@ def requiere_rol(*roles_permitidos: RolEnum):
             )
         return usuario
     return verificar
+
+
+def obtener_email_token_actual(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> str:
+    token = credentials.credentials
+    payload = verificar_token(token)
+
+    if not payload or not payload.get("sub"):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token de verificación inválido o expirado",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if payload.get("type") != "email_verification":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Tipo de token incorrecto",
+        )
+
+    return token

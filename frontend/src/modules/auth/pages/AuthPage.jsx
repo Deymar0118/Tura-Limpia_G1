@@ -40,24 +40,20 @@ function AuthPage({ initialTab = 'login' }) {
     }
   }
 
-  const handleRegister = async (data) => {
+const handleRegister = async (data) => {
     setErrorMessage('')
     setIsSubmitting(true)
 
     try {
-      const resultado = await registrarUsuario({
+      await registrarUsuario({
         nombre: data.nombre,
         email: data.correo,
         password: data.contrasena,
       })
 
-      saveSession({
-        nombre: resultado.usuario.nombre,
-        email: resultado.usuario.email,
-        rol: resultado.usuario.rol,
+      navigate('/verificar-codigo', {
+        state: { email: data.correo },
       })
-
-      navigate('/dashboard', { replace: true })
     } catch (error) {
       setErrorMessage(obtenerMensajeAuth(error))
     } finally {

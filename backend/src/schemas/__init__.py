@@ -9,4 +9,5 @@ from .auth import (
     UsuarioResponse,
     AsignarRolRequest, 
     CambioPasswordRequest,
+    VerificarCodigoRequest,
     TokenEmail)

@@ -16,9 +16,9 @@ from src.security import (
     obtener_usuario_actual,
     requiere_rol,
     limiter,
+    obtener_email_token_actual,
 )
 from src.schemas import (
-
     LoginRequest,
     RegistroRequest,
     RefreshRequest,
@@ -28,6 +28,7 @@ from src.schemas import (
     TokenResponse,
     TokenPayload,
     UsuarioResponse,
+    VerificarCodigoRequest,
     RolEnum,
     TokenEmail,
 )
@@ -82,6 +83,30 @@ async def registrar_usuario(request: Request, datos: RegistroRequest, auth_servi
 async def login(request: Request, datos: LoginRequest, auth_service: AuthService = Depends(get_auth_service)):
     return await auth_service.login(datos)
 
+
+@router.post(
+    "/verificar-codigo",
+    response_model=TokenResponse,
+    summary="Verificar codigo de correo",
+    description="Valida el codigo enviado al correo usando el token temporal y retorna access y refresh token.",
+    responses={
+        200: {"description": "Correo verificado y sesion iniciada"},
+        400: {"description": "Codigo o token invalido, expirado o ya utilizado"},
+        404: {"description": "Usuario no encontrado"},
+        429: {"description": "Limite de solicitudes excedido"},
+    },
+)
+@limiter.limit("5/minute")
+async def verificar_codigo(
+    request: Request,
+    datos: VerificarCodigoRequest,
+    email_token: str = Depends(obtener_email_token_actual),
+    auth_service: AuthService = Depends(get_auth_service),
+):
+    return await auth_service.verificar_email(
+        email_token=email_token,
+        codigo=datos.codigo,
+    )
 
 @router.get(
     "/me",

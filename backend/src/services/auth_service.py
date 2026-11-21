@@ -137,6 +137,86 @@ class AuthService:
             refresh_token=crear_refresh_token(token_data),
         )
 
+    async def verificar_email(self, email_token: str, codigo: str) -> TokenResponse:
+        payload = verificar_token(email_token)
+        if not payload or not payload.get("sub"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Token de verificación inválido o expirado",
+            )
+
+        codigo_verificacion = await self.codigo_verificacion_repository.find_codigo_verificacion_by_id(
+            payload["sub"]
+        )
+        ahora = datetime.now(timezone.utc)
+
+        if not codigo_verificacion:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Código de verificación no encontrado",
+            )
+
+        if codigo_verificacion.used_at is not None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Este código ya fue utilizado",
+            )
+
+        expires_at = codigo_verificacion.expires_at
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+
+        if expires_at <= ahora:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="El código de verificación ha expirado",
+            )
+
+        if not verificar_password(codigo, codigo_verificacion.code_hash):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Código de verificación incorrecto",
+            )
+
+        usuario = await self.usuario_repository.find_usuario_by_id(codigo_verificacion.usuario_id)
+        if not usuario:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Usuario no encontrado",
+            )
+
+        rol_ciudadano = await self.rol_repository.find_rol_by_nombre(RolEnum.CIUDADANO.value)
+        if not rol_ciudadano:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Rol ciudadano no configurado",
+            )
+
+        codigo_verificacion.used_at = ahora
+        await self.codigo_verificacion_repository.db.commit()
+        await self.codigo_verificacion_repository.db.refresh(codigo_verificacion)
+
+        usuario.email_verified = True
+        usuario.email_verified_at = ahora
+        usuario.is_active = True
+        usuario = await self.usuario_repository.update_usuario(usuario)
+
+        perfil = Perfil(
+            usuario_id=usuario.id,
+            rol_id=rol_ciudadano.id,
+            is_active=True,
+        )
+        await self.perfil_repository.create_perfil(perfil)
+
+        roles_activos = await self.rol_repository.get_active_roles_by_user(usuario.id)
+        lista_roles = [r.nombre for r in roles_activos] if roles_activos else [rol_ciudadano.nombre]
+
+        token_data = {"sub": usuario.id, "roles": lista_roles}
+        return TokenResponse(
+            access_token=crear_access_token(token_data),
+            refresh_token=crear_refresh_token(token_data),
+        )
+
 
     async def refresh_token(self, refresh_request: RefreshRequest) -> TokenResponse:
     

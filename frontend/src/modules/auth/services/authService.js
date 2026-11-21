@@ -2,6 +2,8 @@ import {
   apiClient,
   clearAuthTokens,
   setAuthTokens,
+  clearEmailToken,
+  setEmailToken,
 } from '../../../shared/api/apiClient'
 import { clearSession, setSession } from '../../../app/session'
 
@@ -31,8 +33,8 @@ export function iniciarSesion({ email, password }) {
   })
 }
 
-export function registrarUsuario({ nombre, email, password }) {
-  return apiClient('/auth/registro', {
+export async function registrarUsuario({ nombre, email, password }) {
+  const respuesta = await apiClient('/auth/registro', {
     metodo: 'POST',
     body: {
       nombre,
@@ -40,28 +42,17 @@ export function registrarUsuario({ nombre, email, password }) {
       password,
     },
   })
+
+  if (respuesta?.email_token) {
+    setEmailToken(respuesta.email_token)
+  }
+  return respuesta
 }
 
 export async function verificarCodigo({ codigo }) {
-  const emailToken = getEmailToken()
-
-  const resultado = await autenticar('/auth/verificar-codigo', { // ajusta la ruta de tu backend
-    body: { codigo },
-    headers: emailToken ? { Authorization: `Bearer ${emailToken}` } : {},
-  })
-
+  const resultado = await autenticar('/auth/verificar-codigo', { codigo })
   clearEmailToken()
   return resultado
-}
-export async function cerrarSesion() {
-  try {
-    await apiClient('/auth/logout', { metodo: 'POST' })
-  } catch {
-    // Si la llamada falla o el backend no está disponible, aseguramos la limpieza local
-  } finally {
-    clearAuthTokens()
-    clearSession()
-  }
 }
 
 export function obtenerMensajeAuth(error) {
