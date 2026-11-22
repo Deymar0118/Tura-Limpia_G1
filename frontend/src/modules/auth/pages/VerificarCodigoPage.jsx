@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { getEmailToken } from '../../../shared/api/apiClient'
+import RobotLogin from '../../../shared/assets/Robot_verificacion.png'
 import { obtenerMensajeAuth, verificarCodigo } from '../services/authService'
 import { OtpInput } from '../components/OtpInput'
 import './VerificarCodigoPage.css'
@@ -41,121 +42,78 @@ export function VerificarCodigoPage() {
   }
 
   return (
-    <main className="tl-auth-layout">
-      <aside className="tl-auth-showcase" aria-hidden="true">
-        <div className="tl-showcase-badge tl-badge-tl">
-          <span className="tl-pin-dot" />
-          Optimización de rutas
-        </div>
-        <div className="tl-showcase-badge tl-badge-tr">
-          <span className="tl-pin-dot" />
-          Mapa de puntos críticos
-        </div>
+    <div className="verify-page">
+      <main className="verify-layout">
+        <section className="verify-visual" aria-label="Ilustración de verificación de correo">
+          <img
+            className="verify-visual__image"
+            src={RobotLogin}
+            alt="Robot ecológico sosteniendo un correo electrónico"
+          />
+        </section>
 
-        <div className="tl-showcase-center">
-          <div className="tl-security-card">
-            <div className="tl-shield-ring">
-              <svg
-                viewBox="0 0 24 24"
-                width="36"
-                height="36"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                <path d="m9 12 2 2 4-4" />
+        <section className="verify-panel" aria-labelledby="verify-title">
+          <div className="verify-card">
+            <div className="verify-card__icon" aria-hidden="true">
+              <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+                <rect x="7" y="10" width="30" height="24" rx="4" stroke="currentColor" strokeWidth="3" />
+                <path d="m9 13 13 10 13-10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <p className="tl-security-title">Verificación en dos pasos</p>
-            <p className="tl-security-sub">
-              Protegemos el acceso operativo a la plataforma ambiental de Buenaventura.
+
+            <h1 id="verify-title" className="verify-card__title">
+              Confirma tu correo electrónico
+            </h1>
+            <p className="verify-card__subtitle">
+              Hemos enviado un código de verificación a tu correo electrónico.
+              Por favor, ingrésalo a continuación para activar tu cuenta en Tura Limpia.
+              {emailRegistrado && (
+                <span className="verify-card__email">{emailRegistrado}</span>
+              )}
             </p>
-          </div>
 
-          <div className="tl-status-pills">
-            <span className="tl-pill-active">Código enviado</span>
-            <span className="tl-pill-muted">Validación pendiente</span>
-          </div>
-        </div>
+            <form className="verify-form" onSubmit={handleSubmit} noValidate>
+              <label className="verify-form__label">Código de verificación</label>
 
-        <div className="tl-showcase-badge tl-badge-bl">
-          <span className="tl-pin-dot" />
-          Telemetría de flota
-        </div>
-        <div className="tl-showcase-badge tl-badge-br">
-          <span className="tl-pin-dot" />
-          Registro de incidencias
-        </div>
-      </aside>
+              <OtpInput
+                length={6}
+                value={codigo}
+                onChange={(val) => {
+                  setCodigo(val)
+                  if (error) setError('')
+                }}
+                disabled={cargando}
+              />
 
-      <section className="tl-auth-panel">
-        <header className="tl-auth-topbar">
-          <div className="tl-brand-tagline">
-            <span className="tl-status-dot" />
-            <span>Por una Buenaventura más Limpia</span>
-          </div>
-          <Link to="/soporte" className="tl-support-btn">
-            Soporte Asistencial
-          </Link>
-        </header>
+              {error && (
+                <div className="verify-alert" role="alert">
+                  {error}
+                </div>
+              )}
+              <button
+                type="submit"
+                className="verify-submit"
+                disabled={cargando || codigo.length < 6}
+              >
+                {cargando ? 'Verificando código...' : 'Confirmar código'}
+              </button>
+            </form>
 
-        <div className="tl-auth-content">
-          <Link to="/login" className="tl-back-link">
-            <span>&lsaquo;</span> Volver al registro
-          </Link>
+            <p className="verify-help">
+              ¿No recibiste el correo? Revisa tu carpeta de spam o correo no deseado.
+              Si todavía no lo encuentras,{' '}
+              <Link to="/registro">intenta registrarte nuevamente</Link>.
+            </p>
 
-          <div className="tl-verify-badge">Paso final de registro</div>
-
-          <h1 className="tl-auth-title">Verifica tu correo</h1>
-          <p className="tl-auth-subtitle">
-            Hemos enviado un código de 6 dígitos{' '}
-            {emailRegistrado ? (
-              <>
-                a <strong className="tl-highlight-email">{emailRegistrado}</strong>.
-              </>
-            ) : (
-              'a tu bandeja de entrada.'
-            )}
-          </p>
-
-          <form className="tl-verify-form" onSubmit={handleSubmit} noValidate>
-            <label className="tl-field-label">Código de verificación</label>
-
-            <OtpInput
-              length={6}
-              value={codigo}
-              onChange={(val) => {
-                setCodigo(val)
-                if (error) setError('')
-              }}
-              disabled={cargando}
-            />
-
-            {error && (
-              <div className="tl-alert-error" role="alert">
-                {error}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              className="tl-submit-btn"
-              disabled={cargando || codigo.length < 6}
-            >
-              {cargando ? 'Verificando código...' : 'Confirmar y continuar'}
-            </button>
-          </form>
-
-          <p className="tl-helper-note">
-            ¿No recibiste el correo? Revisa tu carpeta de spam o{' '}
-            <Link to="/login" className="tl-inline-link">
-              intenta registrarte nuevamente
+            <Link to="/registro" className="verify-back">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                <path d="M11 4 6 9l5 5M6.5 9H15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Volver al registro
             </Link>
-            .
-          </p>
-        </div>
-      </section>
-    </main>
+          </div>
+        </section>
+      </main>
+    </div>
   )
 }
