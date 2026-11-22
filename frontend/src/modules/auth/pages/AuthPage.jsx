@@ -26,12 +26,6 @@ function AuthPage({ initialTab = 'login' }) {
         password: data.contrasena,
       })
 
-      saveSession({
-        nombre: resultado.usuario.nombre,
-        email: resultado.usuario.email,
-        rol: resultado.usuario.rol,
-      })
-
       navigate('/dashboard', { replace: true })
     } catch (error) {
       setErrorMessage(obtenerMensajeAuth(error))

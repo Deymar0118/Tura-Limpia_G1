@@ -5,6 +5,7 @@ import {
   setAuthTokens,
   clearEmailToken,
   setEmailToken,
+  getRefreshToken,
 } from '../../../shared/api/apiClient'
 import { clearSession, setSession } from '../../../app/session'
 
@@ -22,7 +23,6 @@ async function autenticar(ruta, body) {
     return { tokens, usuario }
   } catch (error) {
     clearAuthTokens()
-    clearSession()
     throw error
   }
 }
@@ -34,7 +34,20 @@ export function iniciarSesion({ email, password }) {
   })
 }
 
-export function cerrarSesion() {
+export async function cerrarSesion() {
+  const refreshToken = getRefreshToken()
+
+  if (refreshToken) {
+    try {
+      await apiClient('/auth/logout', {
+        metodo: 'POST',
+        body: { refresh_token: refreshToken },
+      })
+    } catch {
+
+    }
+  }
+
   clearAuthTokens()
   clearSession()
 }
