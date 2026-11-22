@@ -1,9 +1,12 @@
+
 import logging
 from functools import lru_cache
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 logger = logging.getLogger("turalimpia.config")
+
 
 # Identificación y Estado de la Aplicación
 class Settings(BaseSettings):
@@ -13,7 +16,7 @@ class Settings(BaseSettings):
     debug: bool = False
     entorno: str = "desarrollo"
 
-# Conexión al Motor Relacional PostgreSQL
+    # Conexión al Motor Relacional PostgreSQL
     database_url: str = "sqlite+aiosqlite:///./tura_limpia.db"
 
     @property
@@ -25,30 +28,29 @@ class Settings(BaseSettings):
             url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
         return url
 
-# Seguridad y Firma de Tokens de Acceso (JWT)
+    # Seguridad y Firma de Tokens de Acceso (JWT)
     jwt_secret_key: str = "turalimpia_dev_secret_key_cambiar_en_produccion_obligatorio"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
     email_token_expire_minutes: int = 10
     refresh_token_expire_days: int = 7
 
-# Configuración del Protocolo CORS (Cross-Origin Resource Sharing)
+    # Configuración CORS
     allowed_origins: str = "http://localhost:5173"
 
-# Datos de admin
+    # Datos de administrador
     admin_nombre: str | None = None
     admin_email: str | None = None
     admin_password: str | None = None
 
-# Envio de email
-    email_sender: str
-    email_password: str
-    email_port: int = 465
+    # Configuración de Resend
+    resend_api_key: str = Field(repr=False)
+    email_sender: str = "verificacion@turalimpia.store"
 
-# Parámetros de Ingesta del Archivo de Entorno
+    # Parámetros de Ingesta del Archivo de Entorno
     model_config = SettingsConfigDict(
-        env_file=".env", 
-        env_file_encoding="utf-8", 
+        env_file=".env",
+        env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore"
     )
@@ -65,10 +67,12 @@ class Settings(BaseSettings):
             raise RuntimeError(
                 "JWT_SECRET_KEY no cumple con las políticas de seguridad para producción."
             )
+
         if self.es_produccion and len(self.jwt_secret_key) < 32:
             raise RuntimeError(
                 "JWT_SECRET_KEY debe tener al menos 32 caracteres en producción."
             )
+
         if self.es_produccion and self.allowed_origins.strip() == "*":
             raise RuntimeError(
                 "ALLOWED_ORIGINS requiere un dominio específico en producción."

@@ -1,6 +1,27 @@
+
+# Entornos virtuales
 venv/
+venv*/
+.venv/
+
+# Variables de entorno y credenciales
 .env
+.env.*
+!.env.example
+
+# Caché de Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# Editores
 .vscode/
-tura_limpia.db
+.idea/
+
+# Bases de datos locales
+*.db
+*.sqlite
+*.sqlite3
+
+# Archivos temporales
+*.log
