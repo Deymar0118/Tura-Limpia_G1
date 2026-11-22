@@ -7,6 +7,7 @@ from fastapi import FastAPI, Request, Response, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
+from src.middleware.audit import AuditMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession, async_session
 from sqlalchemy import text, delete, select
 
@@ -149,6 +150,7 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
+app.add_middleware(AuditMiddleware)
 
 @app.middleware("http")
 async def security_headers(request: Request, call_next):

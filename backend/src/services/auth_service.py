@@ -118,6 +118,12 @@ class AuthService:
                 detail="Usuario inactivo",
             )
 
+        if not usuario.email_verified:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="este email no ha finalizado el proceso de registro",
+            )
+
         roles_activos = await self.rol_repository.get_active_roles_by_user(usuario.id)
  
         if not roles_activos:
