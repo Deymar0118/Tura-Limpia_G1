@@ -1,3 +1,4 @@
+
 import {
   apiClient,
   clearAuthTokens,
@@ -33,7 +34,12 @@ export function iniciarSesion({ email, password }) {
   })
 }
 
-export async function registrarUsuario({ nombre, email, password }) {
+export function cerrarSesion() {
+  clearAuthTokens()
+  clearSession()
+}
+
+export async function registrarUsuario({ nombre, email, password}) {
   const respuesta = await apiClient('/auth/registro', {
     metodo: 'POST',
     body: {
@@ -50,7 +56,7 @@ export async function registrarUsuario({ nombre, email, password }) {
 }
 
 export async function verificarCodigo({ codigo }) {
-  const resultado = await autenticar('/auth/verificar-codigo', { codigo })
+  const resultado = await autenticar('/auth/verificar-codigo', {codigo })
   clearEmailToken()
   return resultado
 }
@@ -62,6 +68,7 @@ export function obtenerMensajeAuth(error) {
 
   return error?.detail || error?.message || 'No se pudo completar la operación'
 }
+
 export function solicitarRecuperacion({ email }) {
   return apiClient('/auth/recuperar-contrasena', {
     metodo: 'POST',
