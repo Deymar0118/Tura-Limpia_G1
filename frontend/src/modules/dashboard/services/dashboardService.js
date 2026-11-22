@@ -1,4 +1,6 @@
+
 import { ROLES } from '../../../app/session'
+import { apiClient } from '../../../shared/api/apiClient'
 
 /**
  * Catálogo de accesos y módulos organizados por rol,
@@ -64,30 +66,26 @@ const ACCESOS = {
  */
 export function resumenPorRol(rol) {
   const rolClave = rol || ROLES.ADMIN
+
   return {
     accesos: ACCESOS[rolClave] || ACCESOS[ROLES.ADMIN] || [],
   }
 }
 
 /**
- * Carga las métricas y estadísticas clave para el Dashboard de Administrador.
- * [NOTA]: Actualmente retorna datos de prueba locales para desarrollo visual.
- * Al conectarse con el endpoint real de FastAPI (ej: /admin/estadisticas),
- * se reemplazará por la llamada con apiClient.
+ * Carga las métricas del Dashboard de Administrador
+ * desde el backend de Tura Limpia.
  */
 export async function cargarMetricasAdmin() {
+  const resumen = await apiClient('/dashboard/resumen')
+
   return {
-    usuariosTotal: 28,
-    usuariosActivos: 24,
-    usuariosInactivos: 4,
-    porRol: {
-      admin: 2,
-      gerente: 3,
-      conductor: 8,
-      trabajador: 11,
-      ciudadano: 4,
-    },
-    flotaOperativa: '6 / 8',
-    rutasHoy: 5,
+    usuariosTotal: resumen.total,
+    usuariosActivos: resumen.activos,
+    usuariosInactivos: resumen.inactivos,
+
+    // Pendientes de implementar en sus respectivos módulos.
+    flotaOperativa: '—',
+    rutasHoy: '—',
   }
 }

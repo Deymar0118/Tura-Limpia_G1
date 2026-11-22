@@ -1,13 +1,17 @@
+
 from .auth import (
-    RolEnum, 
-    TokenPayload, 
-    LoginRequest, 
-    TokenResponse, 
-    RefreshRequest, 
+    RolEnum,
+    TokenPayload,
+    LoginRequest,
+    TokenResponse,
+    RefreshRequest,
     LogoutRequest,
     RegistroRequest,
     UsuarioResponse,
-    AsignarRolRequest, 
+    AsignarRolRequest,
     CambioPasswordRequest,
     VerificarCodigoRequest,
-    TokenEmail)
+    TokenEmail,
+)
+
+from .dashboard import DashboardResumenResponse
