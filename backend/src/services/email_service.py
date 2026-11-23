@@ -1,46 +1,77 @@
+
 from functools import lru_cache
-import asyncio
-import ssl
-import smtplib
-from email.message import EmailMessage
 import logging
+
+import resend
+
 from src.core.config import get_settings
 
 logger = logging.getLogger("tura_limpia.email_service")
 
 
 class EmailService:
-    def __init__(self, sender_email: str, password: str, smtp_port: int, smtp_host: str = "smtp.gmail.com"):
+    def __init__(self, api_key: str, sender_email: str):
+        self.api_key = api_key
         self.sender_email = sender_email
-        self.password = password
-        self.smtp_host = smtp_host
-        self.smtp_port = smtp_port
 
-    def _enviar_smtp(self, email_destino: str, nombre: str, codigo: str) -> None:
-        em = EmailMessage()
-        em["From"] = self.sender_email
-        em["To"] = email_destino
-        em["Subject"] = "Tu código de confirmación - Tura Limpia"
-        em.set_content(f"Hola {nombre}, tu código de verificación es: {codigo}")
-
-        context = ssl.create_default_context()
-        with smtplib.SMTP_SSL(self.smtp_host, self.smtp_port, context=context, timeout=10) as smtp:
-            smtp.login(self.sender_email, self.password)
-            smtp.send_message(em)
-
-    async def enviar_codigo_verificacion(self, email_destino: str, nombre: str, codigo: str) -> None:
+    async def enviar_codigo_verificacion(
+        self,
+        email_destino: str,
+        nombre: str,
+        codigo: str
+    ) -> None:
         try:
-            await asyncio.to_thread(self._enviar_smtp, email_destino, nombre, codigo)
+            resend.api_key = self.api_key
+
+            params = {
+                "from": self.sender_email,
+                "to": [email_destino],
+                "subject": "Tu código de confirmación - Tura Limpia",
+                "html": f"""
+                    <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto;">
+                        <h2>¡Hola, {nombre}!</h2>
+                        <p>Tu código de verificación para Tura Limpia es:</p>
+                        <div style="
+                            background-color: #f1f5f9;
+                            padding: 20px;
+                            text-align: center;
+                            font-size: 30px;
+                            font-weight: bold;
+                            letter-spacing: 8px;
+                            border-radius: 8px;
+                        ">
+                            {codigo}
+                        </div>
+                        <p>Este código tiene una vigencia limitada.</p>
+                        <p>Si no solicitaste este código, puedes ignorar este correo.</p>
+                        <p>Equipo Tura Limpia</p>
+                    </div>
+                """
+            }
+
+            await resend.Emails.send_async(params)
+
+            logger.info(
+                "Correo de verificación enviado correctamente a %s",
+                email_destino
+            )
+
         except Exception as e:
-            logger.error(f"Error al enviar correo SMTP a {email_destino}: {e}")
-            raise RuntimeError(f"No se pudo enviar el correo de verificación. {e}")
+            logger.error(
+                "Error al enviar correo con Resend a %s: %s",
+                email_destino,
+                e
+            )
+            raise RuntimeError(
+                "No se pudo enviar el correo de verificación."
+            ) from e
 
 
 @lru_cache
 def get_email_service() -> EmailService:
     settings = get_settings()
+
     return EmailService(
-        sender_email=settings.email_sender,
-        password=settings.email_password,
-        smtp_port=settings.email_port,
+        api_key=settings.resend_api_key,
+        sender_email="Tura Limpia <verificacion@turalimpia.store>",
     )

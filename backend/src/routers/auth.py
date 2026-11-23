@@ -101,12 +101,25 @@ async def verificar_codigo(
     request: Request,
     datos: VerificarCodigoRequest,
     email_token: str = Depends(obtener_email_token_actual),
-    auth_service: AuthService = Depends(get_auth_service),
-):
+    auth_service: AuthService = Depends(get_auth_service),):
     return await auth_service.verificar_email(
         email_token=email_token,
         codigo=datos.codigo,
     )
+
+
+@router.post(
+    "/logout",
+    status_code=status.HTTP_200_OK,
+    summary="Cerrar sesion",
+    description="Revoca el refresh token para invalidar la sesion activa.",
+    responses={
+        200: {"description": "Sesion cerrada correctamente"},
+        401: {"description": "Token invalido"},
+    },
+)
+async def logout(datos: LogoutRequest, auth_service: AuthService = Depends(get_auth_service)):
+    return await auth_service.logout(datos)
 
 @router.get(
     "/me",

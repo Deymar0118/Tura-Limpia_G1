@@ -86,6 +86,6 @@ class UsuarioResponse(BaseModel):
     nombre: str
     email: str
     roles: list[RolEnum]
-    is_activo: bool = True
+    is_active: bool = True
     created_at: datetime | None = None
     last_login: datetime | None = None

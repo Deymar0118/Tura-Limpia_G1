@@ -1,9 +1,11 @@
+
 import {
   apiClient,
   clearAuthTokens,
   setAuthTokens,
   clearEmailToken,
   setEmailToken,
+  getRefreshToken,
 } from '../../../shared/api/apiClient'
 import { clearSession, setSession } from '../../../app/session'
 
@@ -21,7 +23,6 @@ async function autenticar(ruta, body) {
     return { tokens, usuario }
   } catch (error) {
     clearAuthTokens()
-    clearSession()
     throw error
   }
 }
@@ -33,7 +34,25 @@ export function iniciarSesion({ email, password }) {
   })
 }
 
-export async function registrarUsuario({ nombre, email, password }) {
+export async function cerrarSesion() {
+  const refreshToken = getRefreshToken()
+
+  if (refreshToken) {
+    try {
+      await apiClient('/auth/logout', {
+        metodo: 'POST',
+        body: { refresh_token: refreshToken },
+      })
+    } catch {
+
+    }
+  }
+
+  clearAuthTokens()
+  clearSession()
+}
+
+export async function registrarUsuario({ nombre, email, password}) {
   const respuesta = await apiClient('/auth/registro', {
     metodo: 'POST',
     body: {
@@ -50,7 +69,7 @@ export async function registrarUsuario({ nombre, email, password }) {
 }
 
 export async function verificarCodigo({ codigo }) {
-  const resultado = await autenticar('/auth/verificar-codigo', { codigo })
+  const resultado = await autenticar('/auth/verificar-codigo', {codigo })
   clearEmailToken()
   return resultado
 }
@@ -62,6 +81,7 @@ export function obtenerMensajeAuth(error) {
 
   return error?.detail || error?.message || 'No se pudo completar la operación'
 }
+
 export function solicitarRecuperacion({ email }) {
   return apiClient('/auth/recuperar-contrasena', {
     metodo: 'POST',
