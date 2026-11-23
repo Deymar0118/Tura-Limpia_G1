@@ -1,6 +1,7 @@
+
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { getSession } from '../../../app/session'
+import { getSession, ETIQUETA_ROL } from '../../../app/session'
 import { cerrarSesion } from '../../auth/services/authService'
 import TuraLimpiaLogo from '../../../shared/assets/TuraLimpiaLogo.png'
 import './AdminSidebar.css'
@@ -16,8 +17,19 @@ function AdminSidebar({ colapsado, onToggle }) {
   const [avisoConstruccion, setAvisoConstruccion] = useState(null)
 
   const nombreUsuario =
-    sesion?.nombre || sesion?.nombre_usuario || 'Administrador'
-  const rolUsuario = sesion?.rol || 'Administrador'
+    sesion?.nombre || sesion?.nombre_usuario || 'Usuario'
+
+  // Los roles de la sesión se almacenan en un arreglo: sesion.roles.
+  const rolesUsuario = Array.isArray(sesion?.roles)
+    ? sesion.roles
+    : []
+
+  // Convertir los códigos de rol en etiquetas legibles.
+  const rolUsuario = rolesUsuario.length > 0
+    ? rolesUsuario
+        .map((rol) => ETIQUETA_ROL[String(rol).toLowerCase()] || rol)
+        .join(', ')
+    : 'Sin rol asignado'
 
   const handleCerrarSesion = async () => {
     try {
@@ -29,7 +41,7 @@ function AdminSidebar({ colapsado, onToggle }) {
     }
   }
 
-  // Lista de funciones de administración para la barra lateral
+  // Lista de funciones de administración para la barra lateral.
   const enlacesNav = [
     {
       to: '/dashboard',
@@ -109,29 +121,50 @@ function AdminSidebar({ colapsado, onToggle }) {
   const handleItemClick = (e, enlace) => {
     if (enlace.enConstruccion) {
       e.preventDefault()
-      setAvisoConstruccion(`La sección "${enlace.etiqueta}" se encuentra actualmente en construcción.`)
+      setAvisoConstruccion(
+        `La sección "${enlace.etiqueta}" se encuentra actualmente en construcción.`
+      )
+
       setTimeout(() => {
         setAvisoConstruccion(null)
       }, 3500)
+
       return
     }
 
-    // En pantallas móviles, si se selecciona un enlace funcional, cerrar el menú
-    if (typeof window !== 'undefined' && window.innerWidth <= 768 && !colapsado) {
+    // En pantallas móviles, cerrar el menú al seleccionar un enlace.
+    if (
+      typeof window !== 'undefined' &&
+      window.innerWidth <= 768 &&
+      !colapsado
+    ) {
       onToggle()
     }
   }
 
   return (
-    <aside className={`admin-sidebar ${colapsado ? 'admin-sidebar--collapsed' : ''}`}>
-      {/* Cabecera del Sidebar con Marca y Botón de Toggle */}
+    <aside
+      className={`admin-sidebar ${
+        colapsado ? 'admin-sidebar--collapsed' : ''
+      }`}
+    >
+      {/* Cabecera del Sidebar */}
       <div className="admin-sidebar__header">
         <div className="admin-sidebar__brand">
-          <img src={TuraLimpiaLogo} alt="Logo Tura Limpia" className="admin-sidebar__logo" />
+          <img
+            src={TuraLimpiaLogo}
+            alt="Logo Tura Limpia"
+            className="admin-sidebar__logo"
+          />
+
           {!colapsado && (
             <div className="admin-sidebar__brand-text">
-              <span className="admin-sidebar__title">Tura Limpia</span>
-              <span className="admin-sidebar__sub">Administración</span>
+              <span className="admin-sidebar__title">
+                Tura Limpia
+              </span>
+              <span className="admin-sidebar__sub">
+                Administración
+              </span>
             </div>
           )}
         </div>
@@ -140,8 +173,16 @@ function AdminSidebar({ colapsado, onToggle }) {
           type="button"
           className="admin-sidebar__toggle-btn"
           onClick={onToggle}
-          title={colapsado ? 'Expandir barra lateral' : 'Contraer barra lateral'}
-          aria-label={colapsado ? 'Expandir barra lateral' : 'Contraer barra lateral'}
+          title={
+            colapsado
+              ? 'Expandir barra lateral'
+              : 'Contraer barra lateral'
+          }
+          aria-label={
+            colapsado
+              ? 'Expandir barra lateral'
+              : 'Contraer barra lateral'
+          }
         >
           <svg
             width="18"
@@ -152,7 +193,11 @@ function AdminSidebar({ colapsado, onToggle }) {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className={`admin-sidebar__toggle-icon ${colapsado ? 'admin-sidebar__toggle-icon--rotated' : ''}`}
+            className={`admin-sidebar__toggle-icon ${
+              colapsado
+                ? 'admin-sidebar__toggle-icon--rotated'
+                : ''
+            }`}
           >
             <polyline points="15 18 9 12 15 6" />
           </svg>
@@ -160,25 +205,48 @@ function AdminSidebar({ colapsado, onToggle }) {
       </div>
 
       {/* Enlaces de Navegación */}
-      <nav className="admin-sidebar__nav" aria-label="Menú de Navegación Administrativa">
-        {!colapsado && <span className="admin-sidebar__section-tag">Funciones del Sistema</span>}
+      <nav
+        className="admin-sidebar__nav"
+        aria-label="Menú de Navegación Administrativa"
+      >
+        {!colapsado && (
+          <span className="admin-sidebar__section-tag">
+            Funciones del Sistema
+          </span>
+        )}
+
         <ul className="admin-sidebar__menu">
           {enlacesNav.map((enlace) => (
-            <li key={enlace.to} className="admin-sidebar__item">
+            <li
+              key={enlace.to}
+              className="admin-sidebar__item"
+            >
               <NavLink
                 to={enlace.to}
                 onClick={(e) => handleItemClick(e, enlace)}
                 className={({ isActive }) =>
-                  `admin-sidebar__link ${isActive && !enlace.enConstruccion ? 'admin-sidebar__link--active' : ''}`
+                  `admin-sidebar__link ${
+                    isActive && !enlace.enConstruccion
+                      ? 'admin-sidebar__link--active'
+                      : ''
+                  }`
                 }
                 title={colapsado ? enlace.etiqueta : undefined}
               >
-                <span className="admin-sidebar__icon">{enlace.icono}</span>
+                <span className="admin-sidebar__icon">
+                  {enlace.icono}
+                </span>
+
                 {!colapsado && (
                   <span className="admin-sidebar__label-wrap">
-                    <span className="admin-sidebar__label">{enlace.etiqueta}</span>
+                    <span className="admin-sidebar__label">
+                      {enlace.etiqueta}
+                    </span>
+
                     {enlace.enConstruccion && (
-                      <span className="admin-sidebar__badge-dev">Pronto</span>
+                      <span className="admin-sidebar__badge-dev">
+                        Pronto
+                      </span>
                     )}
                   </span>
                 )}
@@ -194,12 +262,19 @@ function AdminSidebar({ colapsado, onToggle }) {
           <div className="admin-sidebar__avatar">
             {nombreUsuario.charAt(0).toUpperCase()}
           </div>
+
           {!colapsado && (
             <div className="admin-sidebar__user-details">
-              <span className="admin-sidebar__user-name" title={nombreUsuario}>
+              <span
+                className="admin-sidebar__user-name"
+                title={nombreUsuario}
+              >
                 {nombreUsuario}
               </span>
-              <span className="admin-sidebar__user-role">{rolUsuario}</span>
+
+              <span className="admin-sidebar__user-role">
+                {rolUsuario}
+              </span>
             </div>
           )}
         </div>
@@ -211,23 +286,40 @@ function AdminSidebar({ colapsado, onToggle }) {
           title="Cerrar sesión"
           aria-label="Cerrar sesión"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
             <polyline points="16 17 21 12 16 7" />
             <line x1="21" y1="12" x2="9" y2="12" />
           </svg>
+
           {!colapsado && <span>Cerrar Sesión</span>}
         </button>
       </div>
 
       {/* Toast Flotante "En Construcción" */}
       {avisoConstruccion && (
-        <div className="admin-sidebar__toast" role="alert">
-          <span className="admin-sidebar__toast-icon">🚧</span>
+        <div
+          className="admin-sidebar__toast"
+          role="alert"
+        >
+          <span className="admin-sidebar__toast-icon">
+            🚧
+          </span>
+
           <div className="admin-sidebar__toast-content">
             <strong>Módulo en Construcción</strong>
             <p>{avisoConstruccion}</p>
           </div>
+
           <button
             type="button"
             className="admin-sidebar__toast-close"
