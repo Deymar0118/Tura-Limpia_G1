@@ -214,7 +214,30 @@ Para comprobar que el administrador se creó:
 
 
 
-\_Sección a cargo de la otra persona de la pareja.\_
+Con el backend (http://localhost:8000) y el frontend (http://localhost:5173)
+en ejecución:
+
+1. **Inicio de sesión correcto:** abrir `/login` e ingresar el correo y la
+   contraseña del administrador definidos en `backend/.env`.
+   Resultado esperado: se abre `/dashboard`.
+2. **Credenciales incorrectas:** ingresar una contraseña errónea.
+   Resultado esperado: el mensaje "Credenciales inválidas".
+3. **Límite de intentos:** realizar más de 5 intentos en un minuto.
+   Resultado esperado: "Demasiadas solicitudes, intenta mas tarde".
+4. **Cerrar sesión:** usar el botón de cerrar sesión de la barra lateral.
+   Resultado esperado: vuelve a `/login`.
+5. **Acceso sin autenticación a la API del panel:** en
+   http://localhost:8000/docs, ejecutar `GET /dashboard/resumen` sin autorizar.
+   Resultado esperado: respuesta 401 con "Not authenticated".
+6. **Token inválido:** pulsar Authorize con un texto cualquiera y repetir la
+   petición. Resultado esperado: 401 con "Token inválido o expirado".
+7. **Sesión de administrador:** iniciar sesión en `POST /auth/login`, copiar el
+   `access_token`, pegarlo en Authorize (solo el token) y repetir la petición.
+   Resultado esperado: respuesta 200.
+8. **Rol:** con el mismo token, ejecutar `GET /auth/me`.
+   Resultado esperado: respuesta 200 con el rol `admin`.
+9. **Usuario sin verificar:** intentar iniciar sesión con un ciudadano que aún
+   no verificó su correo. Resultado esperado: 403 con "Usuario inactivo".
 
 
 
@@ -222,5 +245,27 @@ Para comprobar que el administrador se creó:
 
 
 
-\_Sección a cargo de la otra persona de la pareja.\_
+- **El login muestra "No se pudo conectar con el servidor":** el backend no
+  está en ejecución. Iniciarlo con `uvicorn src.main:app --reload` desde la
+  carpeta `backend` y abrir el frontend en http://localhost:5173 (no en
+  127.0.0.1).
+- **El backend no arranca y menciona `resend_api_key`:** falta la variable
+  `RESEND_API_KEY` en `backend/.env`. Agregar cualquier valor de prueba para
+  iniciar sesión como administrador.
+- **El backend no arranca y dice "no existe la relación tokens_revocados":**
+  faltan las tablas. Ejecutar `alembic upgrade head` desde la carpeta
+  `backend` (con el entorno virtual activo) y volver a iniciar el backend.
+- **El backend o `alembic upgrade head` fallan con "connection was closed in
+  the middle of operation":** revisar que la contraseña de `DATABASE_URL`
+  coincida con la del usuario `postgres` de PostgreSQL.
+- **No inicia sesión con el administrador:** si la base de datos ya tenía un
+  administrador creado con otra contraseña, el backend no la reemplaza. Usar
+  una base de datos nueva o iniciar sesión con la contraseña anterior.
+- **Mensaje "Demasiadas solicitudes":** esperar un minuto y reintentar.
+- **El registro de un ciudadano muestra "No se pudo conectar con el
+  servidor" con una clave de Resend de prueba:** el correo de verificación no
+  se envía, pero la cuenta queda creada e inactiva. Para enviar correos reales
+  se necesita una clave válida de Resend.
+- **Error al activar el entorno virtual en PowerShell:** ejecutar
+  `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` y reintentar.
 
