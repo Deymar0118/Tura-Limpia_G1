@@ -121,4 +121,75 @@ frontend/
         ├── assets/
         └── ui/
 ```
+## Documentación del proyecto
 
+```text
+Tura-Limpia_G1/
+├── README.md
+├── docs/
+│   ├── verificacion-acceso-admin.md
+│   └── evidencias/
+│       └── entrega-1/
+│           ├── login-admin.png
+│           ├── dashboard-admin.png
+│           └── demo-entrega-1.mp4
+└── frontend/
+    └── docs/
+        ├── guia-visual-frontend.md
+        └── guia-visual-turalimpia.md
+```
+
+## Entrega 1 — Acceso administrativo
+
+### Información del proyecto
+
+- **Equipo:** Tura Limpia G1
+- **Institución:** Universidad del Pacífico Omar Barona Murillo, Campus Universitario
+- **Programa:** Ingeniería de Sistemas
+- **Asignatura:** Seminario de Actualización I
+- **Periodo:** 2026-2
+- **Repositorio:** [Tura-Limpia_G1](https://github.com/Deymar0118/Tura-Limpia_G1)
+- **Release:** [semana-1](https://github.com/Deymar0118/Tura-Limpia_G1/releases/tag/semana-1)
+
+### Aplicación desplegada
+
+- **Frontend:** [Tura Limpia](https://tura-limpia-unipacifico.vercel.app/)
+- **API backend:** [Documentación interactiva](https://tura-limpia-unipacifico-production.up.railway.app/docs)
+
+### Funcionalidades incluidas
+
+Esta versión incluye autenticación y verificación de usuarios por correo, conexión con PostgreSQL, migraciones con Alembic, registro de auditoría y módulos de interfaz administrativa.
+
+### Tecnologías
+
+- **Frontend:** React y Vite.
+- **Backend:** Python y FastAPI.
+- **Base de datos:** PostgreSQL y SQLAlchemy.
+- **Migraciones:** Alembic.
+- **Envío de correo:** Resend.
+
+### Integrantes y aportes
+
+| Integrante | GitHub | Aporte |
+|---|---|---|
+| Ivan Arlex Buenaventura | [Ivan-Arlex](https://github.com/Ivan-Arlex) | Autenticación, seguridad, verificación de correo y validación de roles. |
+| Deymar Andres Ampudia Rivas | [Deymar0118](https://github.com/Deymar0118) | Estructura frontend, flujo de autenticación y diseño del dashboard de administrador. |
+| Viviana Hurtado | [vivihv013](https://github.com/vivihv013) | Interfaz de verificación de código y mejoras visuales del login y la página principal. |
+| Luis David Cabezas | [l-Zamas](https://github.com/l-Zamas) | Sección de impacto y metas de la página principal; apoyo en la realización del video de evidencia. |
+| Harold Stewar Viveros | [hstewart11](https://github.com/hstewart11) | Configuración inicial del backend con FastAPI y conexión a PostgreSQL; apoyo en la realización del video de evidencia. |
+| Jesus Edwuardo Zapata | [JesusZapata13](https://github.com/JesusZapata13) | Pantallas de recuperación y restablecimiento de contraseña, y estilos de autenticación. |
+| Leonardo Javier Mercado | [Javimercad](https://github.com/Javimercad) | Documentación del proyecto. |
+| Santiago Andres Guarnizo | [sagp3](https://github.com/sagp3) | Métricas del dashboard, cierre de sesión e integración del correo con Resend. |
+| Ildemar Molano Castillo | [ildemar218](https://github.com/ildemar218) | Documentación de los pasos para verificar el acceso administrativo. |
+| Frank Viveros Barros | [frankbarros29](https://github.com/frankbarros29) | Documentación del proyecto. |
+
+### Verificación del acceso administrativo
+
+1. Abrir el [frontend de Tura Limpia](https://tura-limpia-unipacifico.vercel.app/).
+2. Iniciar sesión con las credenciales de demostración proporcionadas por el líder mediante Teams.
+3. Verificar el acceso al dashboard administrativo.
+4. Consultar los endpoints disponibles en la [documentación interactiva de la API](https://tura-limpia-unipacifico-production.up.railway.app/docs).
+
+### Evidencias
+
+- **Video de demostración**, realizado por Harold Stewar Viveros y Luis David Cabezas: [Ver video de la primera entrega](https://github.com/Deymar0118/Tura-Limpia_G1/releases/download/semana-1/Evidencias.video.primera.entrega.mp4)
