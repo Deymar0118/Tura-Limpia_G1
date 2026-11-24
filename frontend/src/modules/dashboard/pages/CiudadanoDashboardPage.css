@@ -1,0 +1,288 @@
+.ciudadano-dash-page {
+  min-height: 100vh;
+  background: var(--color-tl-bg);
+  color: var(--color-text-main);
+  font-family: var(--font-sans);
+}
+
+/* Header superior */
+.ciudadano-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.ciudadano-topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ciudadano-topbar__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--color-tl-green-dark);
+  background: var(--color-success-bg);
+}
+
+.ciudadano-topbar__subtitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-body);
+}
+
+.ciudadano-topbar__user-area {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ciudadano-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-surface);
+  background: linear-gradient(
+    135deg,
+    var(--color-tl-green-primary),
+    var(--color-tl-blue-primary)
+  );
+  flex-shrink: 0;
+}
+
+.ciudadano-topbar__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.ciudadano-topbar__name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  line-height: 1.2;
+}
+
+.ciudadano-roles-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.ciudadano-role-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-highlight-blue);
+  background: var(--color-info-bg);
+  border: 1px solid var(--color-border);
+}
+
+.ciudadano-role-pill--muted {
+  color: var(--color-text-body);
+  background: var(--color-tl-bg);
+}
+
+.ciudadano-logout-btn {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-control);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-error);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.ciudadano-logout-btn:hover {
+  background: var(--color-error-bg);
+  border-color: var(--color-error);
+}
+
+/* Contenedor principal */
+.ciudadano-dash-container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* Banner de bienvenida */
+.ciudadano-welcome-banner {
+  background: linear-gradient(
+    120deg,
+    var(--color-info-bg) 0%,
+    var(--color-tl-glow-green) 100%
+  );
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding: var(--space-6);
+}
+
+.ciudadano-welcome-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-tl-green-dark);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+  border: 1px solid var(--color-border);
+}
+
+.ciudadano-welcome-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--color-tl-sun);
+}
+
+.ciudadano-welcome-text h1 {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  color: var(--color-text-main);
+}
+
+.ciudadano-welcome-text p {
+  margin: 0;
+  max-width: 68ch;
+  color: var(--color-text-body);
+}
+
+/* Tarjeta de información del usuario y estado en diseño */
+.ciudadano-profile-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.ciudadano-profile-card__top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.ciudadano-profile-avatar-lg {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: var(--color-surface);
+  background: var(--color-tl-blue-primary);
+  flex-shrink: 0;
+}
+
+.ciudadano-section-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--color-text-main);
+}
+
+.ciudadano-section-subtitle {
+  margin: var(--space-1) 0 0;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.ciudadano-user-grid {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+}
+
+.ciudadano-user-item {
+  padding: var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-tl-bg);
+  border: 1px solid var(--color-border);
+}
+
+.ciudadano-user-item dt {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.ciudadano-user-item dd {
+  margin: 0;
+  font-weight: 600;
+  color: var(--color-text-main);
+  word-break: break-word;
+}
+
+.ciudadano-status-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.ciudadano-status-tag--active {
+  color: var(--color-success);
+  background: var(--color-success-bg);
+}
+
+.ciudadano-status-tag--inactive {
+  color: var(--color-error);
+  background: var(--color-error-bg);
+}
+
+.ciudadano-design-notice {
+  padding: var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-info-bg);
+  border: 1px solid var(--color-tl-blue-sky);
+  color: var(--color-text-body);
+  font-size: 0.9rem;
+}
+
+.ciudadano-dash-footer {
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  padding-top: var(--space-2);
+}

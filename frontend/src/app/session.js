@@ -57,13 +57,29 @@ export function clearSession() {
   setQueryCacheScope('anon')
 }
 
-export function getRol() {
-  return getSession()?.rol || null
+export function getRoles() {
+  const roles = getSession()?.roles
+  return Array.isArray(roles) ? roles : []
+}
+
+export function requiereRol(rolesPermitidos = []) {
+  const rolesUsuario = getRoles()
+  if (!Array.isArray(rolesPermitidos) || rolesPermitidos.length === 0) {
+    return false
+  }
+  return rolesPermitidos.some((rol) => rolesUsuario.includes(rol))
 }
 
 export function getUsuario() {
   const sesion = getSession()
-  return sesion ? { nombre: sesion.nombre, email: sesion.email, rol: sesion.rol } : null
+  if (!sesion) return null
+
+  return {
+    nombre: sesion.nombre ?? null,
+    email: sesion.email ?? null,
+    roles: Array.isArray(sesion.roles) ? sesion.roles : [],
+    isActive: Boolean(sesion.is_active),
+  }
 }
 
 if (typeof localStorage !== 'undefined') {

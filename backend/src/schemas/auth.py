@@ -72,6 +72,8 @@ class TokenEmail(BaseModel):
     email_token: str
     token_type: str = "bearer"
 
+class VerificarCodigoRequest(BaseModel):
+    codigo: str = Field(..., min_length=4, max_length=10)
 
 class TokenPayload(BaseModel):
     sub: str
@@ -84,6 +86,6 @@ class UsuarioResponse(BaseModel):
     nombre: str
     email: str
     roles: list[RolEnum]
-    is_activo: bool = True
+    is_active: bool = True
     created_at: datetime | None = None
     last_login: datetime | None = None
