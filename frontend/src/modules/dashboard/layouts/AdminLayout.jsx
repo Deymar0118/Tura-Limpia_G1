@@ -12,14 +12,20 @@ function AdminLayout() {
   // Inicia comprimida por defecto al iniciar sesión o cargar la página
   const [colapsado, setColapsado] = useState(true)
 
-  // Verifica si el usuario autenticado tiene rol de administrador
+  // Verifica si el usuario autenticado tiene rol de administrador o gerente
   const sesion = getSession()
-  const esAdmin = typeof requiereRol === 'function'
-    ? requiereRol([ROLES.ADMIN])
-    : (sesion?.rol === ROLES.ADMIN || sesion?.rol === 'administrador')
+  const esAutorizado = typeof requiereRol === 'function'
+    ? requiereRol([ROLES.ADMIN, ROLES.GERENTE])
+    : (
+        sesion?.rol === ROLES.ADMIN ||
+        sesion?.rol === ROLES.GERENTE ||
+        sesion?.rol === 'admin' ||
+        sesion?.rol === 'gerente' ||
+        sesion?.rol === 'administrador'
+      )
 
-  // Si el usuario no es administrador (ej. ciudadano), no se muestra la barra administrativa
-  if (!esAdmin) {
+  // Si el usuario no tiene rol administrativo/gerencial (ej. ciudadano), no se muestra la barra administrativa
+  if (!esAutorizado) {
     return <Outlet />
   }
 

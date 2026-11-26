@@ -4,6 +4,7 @@ import AuthPage from './modules/auth/pages/AuthPage'
 import AdminLayout from './modules/dashboard/layouts/AdminLayout'
 import { VerificarCodigoPage } from './modules/auth/pages/VerificarCodigoPage'
 import DashboardPage from './modules/dashboard/pages/DashboardPage'
+import VehiculosPage from './modules/vehiculos/pages/VehiculosPage'
 
 function App() {
   return (
@@ -20,6 +21,8 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/admin" element={<Navigate to="/dashboard" replace />} />
           <Route path="/admin/usuarios" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/admin/vehiculos" element={<VehiculosPage />} />
+          <Route path="/construccion/flota" element={<Navigate to="/admin/vehiculos" replace />} />
           <Route path="/construccion/:modulo" element={<Navigate to="/dashboard" replace />} />
         </Route>
 
