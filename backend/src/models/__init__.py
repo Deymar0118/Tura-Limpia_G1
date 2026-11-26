@@ -5,6 +5,7 @@ from src.models.usuario import Usuario
 from src.models.codigo_verificacion import CodigoVerificacion
 from src.models.token_revocado import TokenRevocado
 from src.models.registro_auditoria import RegistroAuditoria
+from src.models.vehiculo import Vehiculo
 
 __all__ = [
     "Rol",
@@ -13,4 +14,5 @@ __all__ = [
     "CodigoVerificacion",
     "TokenRevocado",
     "RegistroAuditoria",
+    "Vehiculo",
 ]
