@@ -209,7 +209,19 @@ async def rate_limit_handler(
 origins = [
     origin.strip()
     for origin in settings.allowed_origins.split(",")
+    if origin.strip()
 ]
+
+# Orígenes permitidos para desarrollo local.
+# No se agregan automáticamente en producción.
+if not settings.es_produccion:
+    origins.extend([
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ])
+
+# Eliminar posibles orígenes duplicados.
+origins = list(dict.fromkeys(origins))
 
 app.add_middleware(
     CORSMiddleware,

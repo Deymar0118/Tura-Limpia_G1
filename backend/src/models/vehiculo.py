@@ -8,6 +8,8 @@ from sqlalchemy import (
     Date,
     DateTime,
     Float,
+    Integer,
+    CheckConstraint,
     func,
     text,
 )
@@ -18,6 +20,13 @@ from src.core.database import Base
 
 class Vehiculo(Base):
     __tablename__ = "vehiculos"
+
+    __table_args__ = (
+        CheckConstraint(
+            "capacidad_ton > 0 AND capacidad_ton <= 20",
+            name="ck_vehiculos_capacidad_ton_rango",
+        ),
+    )
 
     id_vehiculo: Mapped[str] = mapped_column(
         String(36),
@@ -38,6 +47,12 @@ class Vehiculo(Base):
     marca: Mapped[str] = mapped_column(String(50))
 
     modelo: Mapped[str] = mapped_column(String(50))
+
+    anio_modelo: Mapped[int] = mapped_column(Integer)
+
+    ciudad_matricula: Mapped[str] = mapped_column(
+        String(100)
+    )
 
     capacidad_ton: Mapped[float] = mapped_column(Float)
 
