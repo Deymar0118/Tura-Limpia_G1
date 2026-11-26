@@ -17,7 +17,7 @@ function VehiculosFilterBar({
     <div className="vehiculos-filter-bar">
       <div className="vehiculos-filter-bar__inputs">
         {/* Campo de Búsqueda */}
-        <div className="vehiculos-search-box">
+        <div className="vehiculos-search-box" role="search">
           <svg
             className="vehiculos-search-icon"
             width="18"
@@ -28,6 +28,7 @@ function VehiculosFilterBar({
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            aria-hidden="true"
           >
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -38,6 +39,7 @@ function VehiculosFilterBar({
             placeholder="Buscar por placa, N° interno, marca o tipo..."
             value={busqueda}
             onChange={(e) => onBusquedaChange(e.target.value)}
+            aria-label="Buscar vehículos por placa, número interno, marca o tipo"
           />
           {busqueda && (
             <button
@@ -45,6 +47,7 @@ function VehiculosFilterBar({
               className="vehiculos-search-clear"
               onClick={() => onBusquedaChange('')}
               title="Limpiar búsqueda"
+              aria-label="Limpiar campo de búsqueda"
             >
               ✕
             </button>
