@@ -33,6 +33,7 @@ from src.models.perfil import Perfil
 
 from src.routers.auth import router as auth_router
 from src.routers.dashboard import router as dashboard_router
+from src.routers.vehiculos import router as vehiculos_router
 
 
 logger = logging.getLogger("turalimpia.main")
@@ -199,7 +200,7 @@ async def rate_limit_handler(
     return JSONResponse(
         status_code=429,
         content={
-            "detail": "Demasiadas solicitudes, intenta mas tarde"
+            "detail": "Demasiadas solicitudes, intenta más tarde"
         },
     )
 
@@ -254,6 +255,7 @@ async def security_headers(request: Request, call_next):
 # Registro de routers
 app.include_router(auth_router)
 app.include_router(dashboard_router)
+app.include_router(vehiculos_router)
 
 
 @app.get("/", tags=["Root"])
