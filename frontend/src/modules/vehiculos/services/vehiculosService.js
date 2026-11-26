@@ -17,6 +17,17 @@ export const ESTADOS_OPERATIVOS = Object.freeze({
 })
 
 /**
+ * Reglas de validación del modelo de vehículo según el Contrato API v1.1.
+ */
+export const REGLAS_VEHICULO = Object.freeze({
+  ANIO_MINIMO: 1980,
+  obtenerAnioMaximo: () => new Date().getFullYear() + 1,
+  CAPACIDAD_MAXIMA_TON: 20,
+  CIUDAD_MIN_LEN: 2,
+  CIUDAD_MAX_LEN: 100,
+})
+
+/**
  * Extrae y formatea un mensaje de error legible del backend.
  */
 export function obtenerMensajeVehiculo(error) {

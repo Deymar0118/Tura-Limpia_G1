@@ -77,8 +77,18 @@ function VehiculosPage() {
         const coincideMarca = item.marca?.toLowerCase().includes(query)
         const coincideModelo = item.modelo?.toLowerCase().includes(query)
         const coincideTipo = item.tipo?.toLowerCase().includes(query)
+        const coincideCiudad = item.ciudad_matricula?.toLowerCase().includes(query)
+        const coincideAnio = String(item.anio_modelo ?? '').includes(query)
 
-        if (!coincidePlaca && !coincideInterno && !coincideMarca && !coincideModelo && !coincideTipo) {
+        if (
+          !coincidePlaca &&
+          !coincideInterno &&
+          !coincideMarca &&
+          !coincideModelo &&
+          !coincideTipo &&
+          !coincideCiudad &&
+          !coincideAnio
+        ) {
           return false
         }
       }

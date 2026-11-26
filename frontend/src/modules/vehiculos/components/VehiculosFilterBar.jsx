@@ -36,10 +36,10 @@ function VehiculosFilterBar({
           <input
             type="text"
             className="vehiculos-search-input"
-            placeholder="Buscar por placa, N° interno, marca o tipo..."
+            placeholder="Buscar por placa, N° interno, marca, año o ciudad..."
             value={busqueda}
             onChange={(e) => onBusquedaChange(e.target.value)}
-            aria-label="Buscar vehículos por placa, número interno, marca o tipo"
+            aria-label="Buscar vehículos por placa, número interno, marca, año o ciudad de matrícula"
           />
           {busqueda && (
             <button

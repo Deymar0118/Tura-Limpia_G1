@@ -39,6 +39,18 @@ function VehiculoDetalleModal({ vehiculo, onCerrar, onEditar }) {
     }
   }
 
+  const obtenerClaseBadgeOperativo = (estado) => {
+    const normalizado = String(estado || '').toLowerCase()
+    if (normalizado === 'operativo') return 'vehiculo-badge--operativo'
+    if (normalizado === 'en_mantenimiento' || normalizado === 'mantenimiento') {
+      return 'vehiculo-badge--mantenimiento'
+    }
+    if (normalizado === 'fuera_de_servicio') return 'vehiculo-badge--fuera'
+    return 'vehiculo-badge--neutral'
+  }
+
+  const ciudadPlaca = (vehiculo.ciudad_matricula || 'COLOMBIA').trim().toUpperCase()
+
   return (
     <div className="vehiculos-modal-overlay" onClick={onCerrar}>
       <div className="vehiculos-modal-dialog vehiculos-modal-dialog--detalle" onClick={(e) => e.stopPropagation()}>
@@ -64,16 +76,21 @@ function VehiculoDetalleModal({ vehiculo, onCerrar, onEditar }) {
           <div className="vehiculo-detalle-placa-box">
             <span className="vehiculo-detalle-colombia">COLOMBIA</span>
             <span className="vehiculo-detalle-placa">{vehiculo.placa}</span>
-            <span className="vehiculo-detalle-ciudad">BUENAVENTURA</span>
+            <span className="vehiculo-detalle-ciudad" title={ciudadPlaca}>
+              {ciudadPlaca}
+            </span>
           </div>
 
           <div className="vehiculo-detalle-banner-meta">
-            <h3>{vehiculo.marca} {vehiculo.modelo}</h3>
+            <h3>
+              {vehiculo.marca} {vehiculo.modelo}
+              {vehiculo.anio_modelo ? ` (${vehiculo.anio_modelo})` : ''}
+            </h3>
             <p className="vehiculo-detalle-tipo">{vehiculo.tipo}</p>
 
             <div className="vehiculo-detalle-badges">
-              <span className={`vehiculo-badge vehiculo-badge--${vehiculo.estado_operativo}`}>
-                Estado: {vehiculo.estado_operativo.replace('_', ' ')}
+              <span className={`vehiculo-badge ${obtenerClaseBadgeOperativo(vehiculo.estado_operativo)}`}>
+                Estado: {String(vehiculo.estado_operativo || '').replace(/_/g, ' ')}
               </span>
               <span className={`vehiculo-badge ${vehiculo.is_active ? 'vehiculo-badge--operativo' : 'vehiculo-badge--fuera'}`}>
                 {vehiculo.is_active ? 'Habilitado en Sistema' : 'Desactivado Administrativamente'}
@@ -100,8 +117,18 @@ function VehiculoDetalleModal({ vehiculo, onCerrar, onEditar }) {
           </div>
 
           <div className="vehiculo-detalle-item">
-            <span className="vehiculo-detalle-label">Modelo / Serie</span>
+            <span className="vehiculo-detalle-label">Modelo / Referencia</span>
             <span className="vehiculo-detalle-value">{vehiculo.modelo}</span>
+          </div>
+
+          <div className="vehiculo-detalle-item">
+            <span className="vehiculo-detalle-label">Año del Vehículo</span>
+            <span className="vehiculo-detalle-value">{vehiculo.anio_modelo ?? 'No registrado'}</span>
+          </div>
+
+          <div className="vehiculo-detalle-item">
+            <span className="vehiculo-detalle-label">Ubicación de Matrícula</span>
+            <span className="vehiculo-detalle-value">{vehiculo.ciudad_matricula || 'No registrada'}</span>
           </div>
 
           <div className="vehiculo-detalle-item">

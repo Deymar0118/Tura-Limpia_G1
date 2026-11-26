@@ -68,11 +68,25 @@ function VehiculosTable({
               <tr key={vehiculo.id_vehiculo} className={!vehiculo.is_active ? 'vehiculos-tr--inactivo' : ''}>
                 {/* N° Interno y Placa */}
                 <td>
-                  <div className="vehiculo-identificador">
-                    <span className="vehiculo-num-interno">{vehiculo.num_interno}</span>
-                    <span className="vehiculo-placa-badge" title="Placa del vehículo">
-                      {vehiculo.placa}
-                    </span>
+                  <div className="vehiculo-identificador-col">
+                    <div className="vehiculo-identificador">
+                      <span className="vehiculo-num-interno">{vehiculo.num_interno}</span>
+                      <span
+                        className="vehiculo-placa-badge"
+                        title={
+                          vehiculo.ciudad_matricula
+                            ? `Matriculado en ${vehiculo.ciudad_matricula}`
+                            : 'Placa del vehículo'
+                        }
+                      >
+                        {vehiculo.placa}
+                      </span>
+                    </div>
+                    {vehiculo.ciudad_matricula && (
+                      <span className="vehiculo-ciudad-sub">
+                        Matrícula: {vehiculo.ciudad_matricula}
+                      </span>
+                    )}
                   </div>
                 </td>
 
@@ -85,7 +99,10 @@ function VehiculosTable({
                 <td>
                   <div className="vehiculo-marca-modelo">
                     <span className="vehiculo-marca">{vehiculo.marca}</span>
-                    <span className="vehiculo-modelo">{vehiculo.modelo}</span>
+                    <span className="vehiculo-modelo">
+                      {vehiculo.modelo}
+                      {vehiculo.anio_modelo ? ` · ${vehiculo.anio_modelo}` : ''}
+                    </span>
                   </div>
                 </td>
 
