@@ -92,7 +92,7 @@ function VehiculosTable({
                 {/* Capacidad en Toneladas */}
                 <td>
                   <span className="vehiculo-capacidad">
-                    <strong>{vehiculo.capacidad_ton}</strong> Ton
+                    <strong>{Number(vehiculo.capacidad_ton || 0).toFixed(1)}</strong> Ton
                   </span>
                 </td>
 
@@ -107,6 +107,9 @@ function VehiculosTable({
                   >
                     <input
                       type="checkbox"
+                      role="switch"
+                      aria-checked={Boolean(vehiculo.is_active)}
+                      aria-label={`Estado administrativo del vehículo ${vehiculo.num_interno}`}
                       checked={Boolean(vehiculo.is_active)}
                       disabled={estaCambiando}
                       onChange={() => onToggleEstado(vehiculo)}
@@ -125,10 +128,10 @@ function VehiculosTable({
                       type="button"
                       className="vehiculo-btn-action vehiculo-btn-action--view"
                       onClick={() => onVerDetalle(vehiculo)}
-                      title="Ver ficha técnica completa"
-                      aria-label="Ver ficha técnica"
+                      title={`Ver ficha técnica de ${vehiculo.num_interno}`}
+                      aria-label={`Ver ficha técnica del vehículo ${vehiculo.num_interno}`}
                     >
-                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                         <circle cx="12" cy="12" r="3" />
                       </svg>
@@ -139,10 +142,10 @@ function VehiculosTable({
                       type="button"
                       className="vehiculo-btn-action vehiculo-btn-action--edit"
                       onClick={() => onEditar(vehiculo)}
-                      title="Editar datos del vehículo"
-                      aria-label="Editar vehículo"
+                      title={`Editar datos de ${vehiculo.num_interno}`}
+                      aria-label={`Editar datos del vehículo ${vehiculo.num_interno}`}
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                       </svg>
