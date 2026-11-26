@@ -10,14 +10,41 @@ from pydantic import (
 )
 
 
+ANIO_MINIMO = 1980
+ANIO_MAXIMO = date.today().year + 1
+CAPACIDAD_MAXIMA_TON = 20
+
+
 class VehiculoBase(BaseModel):
     tipo: str = Field(..., min_length=2, max_length=50)
     placa: str = Field(..., min_length=6, max_length=6)
     num_interno: str = Field(..., min_length=1, max_length=20)
     marca: str = Field(..., min_length=2, max_length=50)
     modelo: str = Field(..., min_length=1, max_length=50)
-    capacidad_ton: float = Field(..., gt=0)
-    estado_operativo: str = Field(default="operativo", max_length=30)
+
+    anio_modelo: int = Field(
+        ...,
+        ge=ANIO_MINIMO,
+        le=ANIO_MAXIMO,
+    )
+
+    ciudad_matricula: str = Field(
+        ...,
+        min_length=2,
+        max_length=100,
+    )
+
+    capacidad_ton: float = Field(
+        ...,
+        gt=0,
+        le=CAPACIDAD_MAXIMA_TON,
+    )
+
+    estado_operativo: str = Field(
+        default="operativo",
+        max_length=30,
+    )
+
     fecha_adquisicion: date
 
     @field_validator("placa")
@@ -39,6 +66,7 @@ class VehiculoBase(BaseModel):
         "marca",
         "modelo",
         "estado_operativo",
+        "ciudad_matricula",
     )
     @classmethod
     def limpiar_textos(cls, valor: str) -> str:
@@ -60,8 +88,30 @@ class VehiculoUpdate(BaseModel):
     num_interno: str | None = Field(default=None, min_length=1, max_length=20)
     marca: str | None = Field(default=None, min_length=2, max_length=50)
     modelo: str | None = Field(default=None, min_length=1, max_length=50)
-    capacidad_ton: float | None = Field(default=None, gt=0)
-    estado_operativo: str | None = Field(default=None, max_length=30)
+
+    anio_modelo: int | None = Field(
+        default=None,
+        ge=ANIO_MINIMO,
+        le=ANIO_MAXIMO,
+    )
+
+    ciudad_matricula: str | None = Field(
+        default=None,
+        min_length=2,
+        max_length=100,
+    )
+
+    capacidad_ton: float | None = Field(
+        default=None,
+        gt=0,
+        le=CAPACIDAD_MAXIMA_TON,
+    )
+
+    estado_operativo: str | None = Field(
+        default=None,
+        max_length=30,
+    )
+
     fecha_adquisicion: date | None = None
 
     @field_validator("placa")
@@ -86,9 +136,13 @@ class VehiculoUpdate(BaseModel):
         "marca",
         "modelo",
         "estado_operativo",
+        "ciudad_matricula",
     )
     @classmethod
-    def limpiar_textos(cls, valor: str | None) -> str | None:
+    def limpiar_textos(
+        cls,
+        valor: str | None,
+    ) -> str | None:
         if valor is None:
             return None
 
